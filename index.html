@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<title>Scratch SB3 Library Manager</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<style>
+:root{--bg:#f4f5f9;--sf:#fff;--tx:#1d2433;--mu:#6b7385;--bd:#dfe2ea;--ac:#4c6ef5;--ac2:#e7ecff;--dg:#e03131;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#13161d;--sf:#1b1f29;--tx:#e8eaf0;--mu:#98a0b3;--bd:#2c3240;--ac:#7c93ff;--ac2:#252c4a;--dg:#ff6b6b}}
+:root[data-theme="dark"]{--bg:#13161d;--sf:#1b1f29;--tx:#e8eaf0;--mu:#98a0b3;--bd:#2c3240;--ac:#7c93ff;--ac2:#252c4a;--dg:#ff6b6b}
+*{box-sizing:border-box}html,body{height:100%;margin:0}
+body{background:var(--bg);color:var(--tx);font:14px/1.4 Roboto,system-ui,sans-serif;display:flex;flex-direction:column;overflow:hidden}
+button,input,select,textarea{font:inherit;color:inherit}
+.btn{background:var(--sf);border:1px solid var(--bd);border-radius:8px;padding:6px 12px;cursor:pointer}
+.btn:hover{background:var(--ac2)}.btn.pri{background:var(--ac);color:#fff;border-color:var(--ac)}.btn.dg{color:var(--dg)}.btn.sm{padding:3px 8px;font-size:12px}
+input,select,textarea{background:var(--sf);border:1px solid var(--bd);border-radius:8px;padding:6px 10px}
+#top{display:flex;gap:8px;align-items:center;padding:8px 12px;background:var(--sf);border-bottom:1px solid var(--bd);flex-wrap:wrap}
+#top h1{font-size:16px;margin:0 8px 0 0}#q{flex:1;min-width:140px}
+#main{flex:1;display:flex;min-height:0}
+#side{width:230px;overflow:auto;padding:8px;background:var(--sf);border-right:1px solid var(--bd)}
+#center{flex:1;display:flex;flex-direction:column;min-width:0}
+#bulk{display:none;gap:6px;padding:6px 12px;background:var(--ac2);flex-wrap:wrap;align-items:center}
+#content{flex:1;overflow:auto;padding:12px}
+#det{width:290px;overflow:auto;padding:12px;background:var(--sf);border-left:1px solid var(--bd)}
+@media(max-width:900px){#det{display:none}#side{width:170px}}
+.nav{display:flex;align-items:center;gap:6px;padding:5px 8px;border-radius:8px;cursor:pointer;user-select:none}
+.nav:hover{background:var(--ac2)}.nav.on{background:var(--ac2);color:var(--ac);font-weight:500}.nav .n{margin-left:auto;color:var(--mu);font-size:12px}
+.nav.drop{outline:2px dashed var(--ac)}
+.sec{font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--mu);margin:12px 8px 4px;display:flex;justify-content:space-between}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:12px}
+.card{background:var(--sf);border:2px solid var(--bd);border-radius:12px;overflow:hidden;cursor:pointer;position:relative}
+.card.sel,.row.sel{border-color:var(--ac);background:var(--ac2)}
+.th{aspect-ratio:4/3;background:var(--bd);display:flex;align-items:center;justify-content:center;font-size:34px;font-weight:700;color:#fff}
+.th img{width:100%;height:100%;object-fit:cover}
+.card .nm{padding:6px 8px 2px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.card .ac{display:flex;gap:4px;padding:4px 8px 8px}
+.star{position:absolute;top:6px;right:8px;font-size:20px;cursor:pointer;color:#fff;text-shadow:0 0 3px #000}.star.on{color:#fcc419}
+.row{display:flex;align-items:center;gap:10px;padding:5px 10px;border:1px solid transparent;border-bottom-color:var(--bd);cursor:pointer;background:var(--sf)}
+.row .nm{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.row .sz{color:var(--mu);width:80px;text-align:right}
+.chip{display:inline-flex;gap:4px;align-items:center;background:var(--ac2);color:var(--ac);border-radius:99px;padding:2px 9px;margin:2px;font-size:12px;cursor:pointer}
+.chip.on{background:var(--ac);color:#fff}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:16px}
+.stat{background:var(--sf);border:1px solid var(--bd);border-radius:12px;padding:14px}.stat b{font-size:26px;display:block}
+.bar{display:flex;align-items:center;gap:8px;margin:4px 0}.bar i{display:block;height:14px;background:var(--ac);border-radius:4px}.bar span:first-child{width:130px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pnl{background:var(--sf);border:1px solid var(--bd);border-radius:12px;padding:14px;margin-bottom:16px}
+#pl{background:#000;border-radius:8px;overflow:hidden;position:relative;margin:8px auto;width:min(480px,100%);aspect-ratio:4/3}
+#pl:fullscreen{width:100vw;height:100vh;aspect-ratio:auto;margin:0;border-radius:0}
+#plbar{display:flex;gap:6px;align-items:center;justify-content:center;flex-wrap:wrap}
+dialog.player{max-width:540px;width:96vw}
+dialog{border:1px solid var(--bd);border-radius:14px;background:var(--sf);color:var(--tx);max-width:460px}
+dialog::backdrop{background:#0008}
+#prog{height:3px;background:var(--ac);width:0;transition:width .2s}
+#dz{display:none;position:fixed;inset:0;background:#4c6ef5cc;color:#fff;font-size:26px;align-items:center;justify-content:center;z-index:50}
+.empty{text-align:center;color:var(--mu);margin-top:15vh}
+label.f{display:block;font-size:12px;color:var(--mu);margin:10px 0 3px}
+</style></head><body>
+<div id="top">
+ <h1>📚 SB3 Library</h1>
+ <button class="btn pri" id="bImp">＋ Import files</button>
+ <button class="btn" id="bDir">📁 Import folder</button>
+ <button class="btn" id="bNF">New folder</button>
+ <input id="q" type="search" placeholder="Search name, folder, tag, notes…">
+ <select id="sort"><option value="name">Name</option><option value="size">Size</option><option value="mod">Modified</option><option value="added">Date added</option><option value="opens">Most opened</option></select>
+ <button class="btn" id="bDirn" title="Sort direction">↑</button>
+ <button class="btn" id="bView">▦ Grid</button>
+ <button class="btn" id="bMeta">Backup ▾</button>
+ <button class="btn" id="bTheme">◐</button>
+</div>
+<div id="prog"></div>
+<div id="main">
+ <nav id="side"></nav>
+ <section id="center"><div id="bulk"></div><div id="content"></div></section>
+ <aside id="det"></aside>
+</div>
+<div id="dz">Drop .sb3 files or folders to import</div>
+<input type="file" id="fIn" accept=".sb3" multiple hidden>
+<input type="file" id="dIn" webkitdirectory hidden>
+<input type="file" id="mIn" accept=".json" hidden>
+<dialog id="dlg"></dialog>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<!-- TurboWarp's own embeddable player (Scaffolding), loaded as a script so projects run in-page -->
+<script src="https://cdn.jsdelivr.net/npm/@turbowarp/packager@3.13.0/dist/scaffolding/scaffolding-min.js"></script>
+<script>
+/* ============ Scratch SB3 Library Manager ============
+   Layers: DB (IndexedDB) → state/selectors → renderers → actions.
+   Metadata lives in memory (fast filtering); file blobs stay in IndexedDB
+   and are only read on demand (run/export). */
+"use strict";
+const $=s=>document.querySelector(s);
+const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const fmt=b=>b<1024?b+" B":b<1048576?(b/1024).toFixed(1)+" KB":b<1073741824?(b/1048576).toFixed(1)+" MB":(b/1073741824).toFixed(2)+" GB";
+const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,8);
+
+/* ---------- IndexedDB layer ---------- */
+const DB={db:null,
+ open(){return new Promise((ok,no)=>{const r=indexedDB.open("sb3lib",1);
+  r.onupgradeneeded=()=>{const d=r.result;["meta","folders"].forEach(n=>d.createObjectStore(n,{keyPath:"id"}));d.createObjectStore("files")};
+  r.onsuccess=()=>{this.db=r.result;ok()};r.onerror=()=>no(r.error)})},
+ tx(store,mode,fn){return new Promise((ok,no)=>{const t=this.db.transaction(store,mode);const res=fn(t);t.oncomplete=()=>ok(res&&res.result);t.onerror=()=>no(t.error)})},
+ all(s){return new Promise((ok,no)=>{const r=this.db.transaction(s).objectStore(s).getAll();r.onsuccess=()=>ok(r.result);r.onerror=()=>no(r.error)})},
+ put(s,v,k){return this.tx(s,"readwrite",t=>t.objectStore(s).put(v,k))},
+ del(s,k){return this.tx(s,"readwrite",t=>t.objectStore(s).delete(k))},
+ get(s,k){return new Promise((ok,no)=>{const r=this.db.transaction(s).objectStore(s).get(k);r.onsuccess=()=>ok(r.result);r.onerror=()=>no(r.error)})},
+ clear(){return this.tx(["meta","folders","files"],"readwrite",t=>["meta","folders","files"].forEach(s=>t.objectStore(s).clear()))}};
+
+/* ---------- State ---------- */
+const S={items:[],folders:[],view:{t:"all"},tags:new Set(),q:"",sort:"name",asc:true,mode:"grid",sel:new Set(),active:null,limit:60};
+const byId=id=>S.items.find(i=>i.id===id);
+const fById=id=>S.folders.find(f=>f.id===id);
+const fPath=id=>{const a=[];let f=fById(id);while(f){a.unshift(f.name);f=fById(f.parent)}return a.join(" / ")};
+const descendants=id=>{const out=[id];S.folders.filter(f=>f.parent===id).forEach(c=>out.push(...descendants(c.id)));return out};
+const saveItem=i=>DB.put("meta",i);
+
+/* ---------- Selectors ---------- */
+function visible(){
+ let l=S.items;const v=S.view;
+ if(v.t==="fav")l=l.filter(i=>i.fav);
+ else if(v.t==="recent")l=l.filter(i=>i.lastOpened).sort((a,b)=>b.lastOpened-a.lastOpened).slice(0,50);
+ else if(v.t==="top")l=l.filter(i=>i.opens>0).sort((a,b)=>b.opens-a.opens).slice(0,50);
+ else if(v.t==="folder"){const ids=new Set(descendants(v.id));l=l.filter(i=>ids.has(i.folder))}
+ if(S.tags.size)l=l.filter(i=>[...S.tags].every(t=>i.tags.includes(t)));
+ const q=S.q.trim().toLowerCase();
+ if(q)l=l.filter(i=>(i.name+" "+i.title+" "+fPath(i.folder)+" "+i.tags.join(" ")+" "+i.notes).toLowerCase().includes(q));
+ if(!["recent","top"].includes(v.t)){const k=S.sort,d=S.asc?1:-1;
+  l=[...l].sort((a,b)=>(k==="name"?a.name.localeCompare(b.name,undefined,{numeric:true}):(a[k]||0)-(b[k]||0))*d)}
+ return l}
+const allTags=()=>{const m={};S.items.forEach(i=>i.tags.forEach(t=>m[t]=(m[t]||0)+1));return m};
+
+/* ---------- Thumbnail extraction ---------- */
+const MIME={png:"image/png",jpg:"image/jpeg",jpeg:"image/jpeg",svg:"image/svg+xml",gif:"image/gif"};
+async function makeThumb(zip,proj){
+ try{ // prefer first sprite costume (usually the "hero"), else backdrop
+  const t=[...proj.targets].sort((a,b)=>a.isStage-b.isStage);
+  for(const tg of t){const c=(tg.costumes||[])[0];if(!c)continue;
+   const f=zip.file(c.md5ext||c.assetId+"."+c.dataFormat);if(!f)continue;
+   const ext=(c.dataFormat||"png").toLowerCase();
+   const url=URL.createObjectURL(new Blob([await f.async("arraybuffer")],{type:MIME[ext]||"image/png"}));
+   const img=await new Promise((ok,no)=>{const m=new Image();m.onload=()=>ok(m);m.onerror=no;m.src=url});
+   const cv=document.createElement("canvas");cv.width=160;cv.height=120;const x=cv.getContext("2d");
+   x.fillStyle="#fff";x.fillRect(0,0,160,120);
+   const w=img.naturalWidth||img.width||100,h=img.naturalHeight||img.height||100,s=Math.min(150/w,110/h);
+   x.drawImage(img,(160-w*s)/2,(120-h*s)/2,w*s,h*s);URL.revokeObjectURL(url);
+   return cv.toDataURL("image/jpeg",.7)}
+ }catch(e){}return null}
+
+/* ---------- Import ---------- */
+async function importFiles(files){
+ files=[...files].filter(f=>/\.sb3$/i.test(f.name));
+ if(!files.length)return toast("No .sb3 files found");
+ const have=new Set(S.items.map(i=>i.name+"|"+i.size));let n=0;
+ for(const f of files){
+  $("#prog").style.width=(++n/files.length*100)+"%";
+  if(have.has(f.name+"|"+f.size))continue;
+  const it={id:uid(),name:f.name.replace(/\.sb3$/i,""),title:"",size:f.size,mod:f.lastModified,added:Date.now(),
+   folder:null,tags:[],fav:false,notes:"",opens:0,lastOpened:0,thumb:null};
+  try{const zip=await JSZip.loadAsync(f);const pj=zip.file("project.json");
+   if(pj){const p=JSON.parse(await pj.async("string"));
+    it.title=p.meta?.title||p.targets?.find(t=>t.isStage)?.name&&"";it.thumb=await makeThumb(zip,p)}}catch(e){}
+  await DB.put("files",f,it.id);await saveItem(it);S.items.push(it);
+  if(n%10===0){render()}}
+ $("#prog").style.width="0";render();toast("Imported "+files.length+" file(s)")}
+async function walk(entry,out){ // directory drop traversal
+ if(entry.isFile)out.push(await new Promise(r=>entry.file(r)));
+ else{const rd=entry.createReader();let b;do{b=await new Promise(r=>rd.readEntries(r));for(const e of b)await walk(e,out)}while(b.length)}}
+
+/* ---------- Actions ---------- */
+function toast(m){const t=document.createElement("div");t.textContent=m;
+ t.style.cssText="position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--tx);color:var(--bg);padding:8px 16px;border-radius:8px;z-index:99";
+ document.body.appendChild(t);setTimeout(()=>t.remove(),2200)}
+function ask(title,body,okLabel="OK"){return new Promise(res=>{const d=$("#dlg");
+ d.innerHTML=`<h3 style="margin-top:0">${esc(title)}</h3>${body}<div style="text-align:right;margin-top:14px"><button class="btn" value="x">Cancel</button> <button class="btn pri" value="ok">${okLabel}</button></div>`;
+ d.querySelectorAll("button").forEach(b=>b.onclick=()=>{const v=b.value==="ok"?d:null;if(v)d._r=true;d.close()});
+ d.onclose=()=>{res(d._r?d:null);d._r=false};d.showModal();d.querySelector("input,select")?.focus()})}
+const prompt2=async(t,v="")=>{const d=await ask(t,`<input id="pv" style="width:100%" value="${esc(v)}">`);return d?d.querySelector("#pv").value.trim():null};
+const confirm2=async(t,m)=>!!await ask(t,`<p>${esc(m)}</p>`,"Confirm");
+const targets=()=>S.sel.size?[...S.sel].map(byId).filter(Boolean):(S.active?[byId(S.active)]:[]);
+
+async function newFolder(parent=null){const n=await prompt2("New folder name");if(!n)return;
+ const f={id:uid(),name:n,parent};S.folders.push(f);await DB.put("folders",f);render()}
+async function renameFolder(id){const f=fById(id),n=await prompt2("Rename folder",f.name);if(!n)return;f.name=n;await DB.put("folders",f);render()}
+async function deleteFolder(id){if(!await confirm2("Delete folder","Projects inside move to the library root; subfolders move up one level."))return;
+ const f=fById(id);for(const c of S.folders.filter(x=>x.parent===id)){c.parent=f.parent;await DB.put("folders",c)}
+ for(const i of S.items.filter(x=>x.folder===id)){i.folder=f.parent;await saveItem(i)}
+ S.folders=S.folders.filter(x=>x.id!==id);await DB.del("folders",id);if(S.view.id===id)S.view={t:"all"};render()}
+async function moveTo(items,folder){for(const i of items){i.folder=folder;await saveItem(i)}render()}
+async function renameItem(i){const n=await prompt2("Rename project",i.name);if(!n)return;i.name=n;await saveItem(i);render()}
+async function deleteItems(items){if(!items.length||!await confirm2("Delete "+items.length+" project(s)?","This removes them from the library."))return;
+ for(const i of items){await DB.del("meta",i.id);await DB.del("files",i.id)}
+ const ids=new Set(items.map(i=>i.id));S.items=S.items.filter(i=>!ids.has(i.id));ids.forEach(id=>S.sel.delete(id));
+ if(ids.has(S.active))S.active=null;render()}
+async function addTags(items,tags){for(const i of items){tags.forEach(t=>{if(!i.tags.includes(t))i.tags.push(t)});await saveItem(i)}render()}
+async function removeTags(items,tags){for(const i of items){i.tags=i.tags.filter(t=>!tags.includes(t));await saveItem(i)}render()}
+const parseTags=s=>s.split(",").map(t=>t.trim()).filter(Boolean);
+async function toggleFav(i){i.fav=!i.fav;await saveItem(i);render()}
+function download(blob,name){const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),4000)}
+async function exportItems(items){for(const i of items){const f=await DB.get("files",i.id);if(f)download(f,i.name+".sb3")}}
+async function archive(items){let a=S.folders.find(f=>f.name==="Archived"&&!f.parent);
+ if(!a){a={id:uid(),name:"Archived",parent:null};S.folders.push(a);await DB.put("folders",a)}await moveTo(items,a.id)}
+
+/* Run: reads the .sb3 straight from IndexedDB (no upload) and plays it in a modal
+   using TurboWarp's Scaffolding player — green flag, stop, fullscreen, FPS counter. */
+let player=null,fpsRaf=0;
+function closePlayer(){cancelAnimationFrame(fpsRaf);
+ try{player?.vm.quit();player?.stopAll()}catch(e){}player=null;
+ if(document.fullscreenElement)document.exitFullscreen().catch(()=>{})}
+async function run(i){
+ i.opens++;i.lastOpened=Date.now();await saveItem(i);render();
+ const d=$("#dlg");d.className="player";
+ d.innerHTML=`<h3 style="margin:0">▶ ${esc(i.title||i.name)}</h3>
+ <div id="pl"><div id="plmsg" style="color:#fff;padding:20px">Loading project…</div></div>
+ <div id="plbar"><button class="btn pri" id="pG">🏁 Green flag</button><button class="btn dg" id="pS">⏹ Stop</button>
+ <button class="btn" id="pF">⛶ Fullscreen</button><label><input type="checkbox" id="pFps"> FPS</label><span id="pFv" style="min-width:60px;color:var(--mu)"></span>
+ <button class="btn" id="pC">Close</button></div>`;
+ d.onclose=()=>{closePlayer();d.className=""};
+ $("#pC").onclick=()=>d.close();
+ d.showModal();
+ try{
+  const file=await DB.get("files",i.id);if(!file)throw new Error("File missing from storage");
+  const sc=new Scaffolding.Scaffolding();sc.width=480;sc.height=360;sc.resizeMode="preserve-ratio";sc.editableLists=false;
+  sc.setup();const box=$("#pl");box.innerHTML="";sc.appendTo(box);player=sc;
+  await sc.loadProject(await file.arrayBuffer());
+  if(player!==sc)return; // closed while loading
+  sc.start();sc.greenFlag();
+  $("#pG").onclick=()=>sc.greenFlag();
+  $("#pS").onclick=()=>sc.stopAll();
+  $("#pF").onclick=()=>box.requestFullscreen?.().catch(()=>toast("Fullscreen unavailable here"));
+  // Optional FPS counter (render frames per second)
+  let n=0,t0=performance.now();
+  const tick=t=>{n++;if(t-t0>=1000){$("#pFv").textContent=$("#pFps").checked?Math.round(n*1000/(t-t0))+" FPS":"";n=0;t0=t}fpsRaf=requestAnimationFrame(tick)};
+  fpsRaf=requestAnimationFrame(tick);
+ }catch(e){const m=$("#plmsg");if(m)m.textContent="Couldn’t run this project: "+e.message}}
+
+/* Metadata export/import (matches by name+size so it works after re-importing files) */
+function exportMeta(){download(new Blob([JSON.stringify({v:1,folders:S.folders,items:S.items.map(({thumb,...r})=>r)},null,1)],{type:"application/json"}),"sb3-library-metadata.json")}
+async function importMeta(file){try{const j=JSON.parse(await file.text());
+ for(const f of j.folders||[])if(!fById(f.id)){S.folders.push(f);await DB.put("folders",f)}
+ let n=0;for(const r of j.items||[]){const i=S.items.find(x=>x.name===r.name&&x.size===r.size);if(!i)continue;
+  Object.assign(i,{folder:r.folder,tags:r.tags||[],fav:r.fav,notes:r.notes||"",opens:r.opens||0});await saveItem(i);n++}
+ render();toast("Applied metadata to "+n+" project(s)")}catch(e){toast("Invalid metadata file")}}
+
+/* ---------- Render ---------- */
+function nav(label,on,n,attrs=""){return `<div class="nav ${on?"on":""}" ${attrs}>${label}<span class="n">${n??""}</span></div>`}
+function folderTree(parent,depth){return S.folders.filter(f=>f.parent===parent).sort((a,b)=>a.name.localeCompare(b.name)).map(f=>{
+ const cnt=S.items.filter(i=>i.folder===f.id).length;
+ return `<div class="nav ${S.view.t==="folder"&&S.view.id===f.id?"on":""}" data-folder="${f.id}" style="padding-left:${8+depth*14}px">📁 <span style="overflow:hidden;text-overflow:ellipsis">${esc(f.name)}</span><span class="n">${cnt}</span>
+  <span class="n fa" style="margin-left:2px"><a data-fa="sub" data-id="${f.id}" title="Subfolder">＋</a> <a data-fa="ren" data-id="${f.id}" title="Rename">✎</a> <a data-fa="del" data-id="${f.id}" title="Delete">🗑</a></span></div>`+folderTree(f.id,depth+1)}).join("")}
+function renderSide(){const v=S.view,tg=allTags();
+ $("#side").innerHTML=nav("📚 All projects",v.t==="all",S.items.length,'data-v="all"')+nav("⭐ Favorites",v.t==="fav",S.items.filter(i=>i.fav).length,'data-v="fav"')
+ +nav("🕘 Recent",v.t==="recent","",'data-v="recent"')+nav("🔥 Most opened",v.t==="top","",'data-v="top"')+nav("📊 Statistics",v.t==="stats","",'data-v="stats"')
+ +`<div class="sec">Folders</div>`+folderTree(null,0)
+ +`<div class="sec">Tags (multi-filter)</div><div>${Object.keys(tg).sort().map(t=>`<span class="chip ${S.tags.has(t)?"on":""}" data-tag="${esc(t)}">${esc(t)} ${tg[t]}</span>`).join("")||'<span style="color:var(--mu);padding:0 8px">No tags yet</span>'}</div>`}
+const thumb=i=>i.thumb?`<img loading="lazy" src="${i.thumb}" alt="">`:`<span>${esc((i.name[0]||"?").toUpperCase())}</span>`;
+const hue=s=>{let h=0;for(const c of s)h=(h*31+c.charCodeAt(0))%360;return h};
+function renderBulk(){const b=$("#bulk"),n=S.sel.size;b.style.display=n?"flex":"none";if(!n)return;
+ b.innerHTML=`<b>${n} selected</b>
+ <button class="btn sm" data-b="move">Move</button><button class="btn sm" data-b="tag+">Add tags</button><button class="btn sm" data-b="tag-">Remove tags</button>
+ <button class="btn sm" data-b="exp">Export</button><button class="btn sm" data-b="arc">Archive</button><button class="btn sm dg" data-b="del">Delete</button>
+ <button class="btn sm" data-b="all">Select all</button><button class="btn sm" data-b="none">Clear</button>`}
+function renderStats(){const it=S.items,tot=it.reduce((a,i)=>a+i.size,0),tg=allTags();
+ const bars=(o,max)=>Object.entries(o).sort((a,b)=>b[1]-a[1]).slice(0,12).map(([k,v])=>`<div class="bar"><span>${esc(k)}</span><i style="width:${Math.max(3,v/max*100)}%;max-width:60%"></i><span>${v}</span></div>`).join("")||"<i style='color:var(--mu)'>No data</i>";
+ const pf={};S.folders.forEach(f=>{const c=it.filter(i=>i.folder===f.id).length;if(c)pf[fPath(f.id)]=c});const un=it.filter(i=>!i.folder).length;if(un)pf["(No folder)"]=un;
+ const li=l=>l.map(i=>`<div>${esc(i.name)} <span style="color:var(--mu)">${new Date(i.added||i.lastOpened).toLocaleString()}</span></div>`).join("")||"—";
+ $("#content").innerHTML=`<div class="cards"><div class="stat"><b>${it.length}</b>Total projects</div><div class="stat"><b>${fmt(tot)}</b>Storage used</div>
+ <div class="stat"><b>${S.folders.length}</b>Folders</div><div class="stat"><b>${Object.keys(tg).length}</b>Tags</div><div class="stat"><b>${it.filter(i=>i.fav).length}</b>Favorites</div></div>
+ <div class="pnl"><h3>Projects per folder</h3>${bars(pf,Math.max(1,...Object.values(pf)))}</div>
+ <div class="pnl"><h3>Projects per tag</h3>${bars(tg,Math.max(1,...Object.values(tg)))}</div>
+ <div class="cards" style="grid-template-columns:1fr 1fr"><div class="pnl"><h3>Recent imports</h3>${li([...it].sort((a,b)=>b.added-a.added).slice(0,8))}</div>
+ <div class="pnl"><h3>Recently opened</h3>${li(it.filter(i=>i.lastOpened).sort((a,b)=>b.lastOpened-a.lastOpened).slice(0,8))}</div></div>`}
+function renderContent(){
+ if(S.view.t==="stats")return renderStats();
+ const l=visible(),c=$("#content");
+ if(!l.length){c.innerHTML=`<div class="empty"><div style="font-size:48px">📭</div><p>${S.items.length?"No projects match.":"Your library is empty. Drag .sb3 files here or click Import."}</p></div>`;return}
+ const part=l.slice(0,S.limit);
+ const more=l.length>part.length?`<div id="sent" style="height:40px;text-align:center;color:var(--mu)">Loading more…</div>`:"";
+ const star=i=>`<span class="star ${i.fav?"on":""}" data-star="${i.id}">★</span>`;
+ c.innerHTML=(S.mode==="grid"?`<div class="grid">${part.map(i=>`<div class="card ${S.sel.has(i.id)?"sel":""}" data-id="${i.id}" draggable="true">
+  <div class="th" style="${i.thumb?"":`background:hsl(${hue(i.name)} 55% 55%)`}">${thumb(i)}</div>${star(i)}<div class="nm" title="${esc(i.name)}">${esc(i.title||i.name)}</div>
+  <div class="ac"><button class="btn sm pri" data-a="run" data-id="${i.id}">▶ Run</button><button class="btn sm" data-a="ren" data-id="${i.id}">Rename</button><button class="btn sm dg" data-a="del" data-id="${i.id}">🗑</button></div></div>`).join("")}</div>`
+ :part.map(i=>`<div class="row ${S.sel.has(i.id)?"sel":""}" data-id="${i.id}" draggable="true"><input type="checkbox" data-chk="${i.id}" ${S.sel.has(i.id)?"checked":""}>
+  <span data-star="${i.id}" class="star on" style="position:static;color:${i.fav?"#fcc419":"var(--bd)"};text-shadow:none;font-size:16px">★</span>
+  <span class="nm">${esc(i.name)}</span><span class="sz">${fmt(i.size)}</span><button class="btn sm pri" data-a="run" data-id="${i.id}">▶</button></div>`).join(""))+more;
+ const s=$("#sent");if(s)io.observe(s)} // infinite scroll
+const io=new IntersectionObserver(e=>{if(e[0].isIntersecting){io.disconnect();S.limit+=80;renderContent()}},{root:null,rootMargin:"400px"});
+function renderDet(){const i=byId(S.active),d=$("#det");
+ if(!i){d.innerHTML=`<div class="empty" style="margin-top:20vh">Select a project to see details</div>`;return}
+ d.innerHTML=`<div class="th" style="border-radius:10px;overflow:hidden;${i.thumb?"":`background:hsl(${hue(i.name)} 55% 55%)`}">${thumb(i)}</div>
+ <h3 style="margin:10px 0 2px">${esc(i.title||i.name)}</h3><div style="color:var(--mu)">${esc(i.name)}.sb3 · ${fmt(i.size)}</div>
+ <div style="margin:8px 0"><button class="btn sm pri" data-a="run" data-id="${i.id}">▶ Run</button> <button class="btn sm" data-a="fav" data-id="${i.id}">${i.fav?"★ Unstar":"☆ Star"}</button></div>
+ <label class="f">Folder</label><select id="dFolder"><option value="">(none)</option>${S.folders.map(f=>`<option value="${f.id}" ${i.folder===f.id?"selected":""}>${esc(fPath(f.id))}</option>`).join("")}</select>
+ <label class="f">Tags</label><div>${i.tags.map(t=>`<span class="chip" data-rt="${esc(t)}">${esc(t)} ✕</span>`).join("")}</div>
+ <input id="dTag" placeholder="Add tag + Enter" style="width:100%;margin-top:4px">
+ <label class="f">Modified</label><div>${new Date(i.mod).toLocaleString()}</div>
+ <label class="f">Opened</label><div>${i.opens} time(s)</div>
+ <label class="f">Notes / description</label><textarea id="dNotes" rows="6" style="width:100%">${esc(i.notes)}</textarea>`}
+function render(){renderSide();renderBulk();renderContent();renderDet()}
+
+/* ---------- Events (delegated) ---------- */
+$("#side").onclick=e=>{const fa=e.target.closest("[data-fa]");
+ if(fa){e.stopPropagation();const id=fa.dataset.id;return fa.dataset.fa==="sub"?newFolder(id):fa.dataset.fa==="ren"?renameFolder(id):deleteFolder(id)}
+ const tag=e.target.closest("[data-tag]");if(tag){const t=tag.dataset.tag;S.tags.has(t)?S.tags.delete(t):S.tags.add(t);S.limit=60;return render()}
+ const f=e.target.closest("[data-folder]");if(f){S.view={t:"folder",id:f.dataset.folder};S.limit=60;return render()}
+ const v=e.target.closest("[data-v]");if(v){S.view={t:v.dataset.v};S.limit=60;render()}};
+// Drop projects onto folders
+$("#side").ondragover=e=>{const f=e.target.closest("[data-folder],[data-v=all]");if(f&&e.dataTransfer.types.includes("text/ids")){e.preventDefault();f.classList.add("drop")}};
+$("#side").ondragleave=e=>e.target.closest(".nav")?.classList.remove("drop");
+$("#side").ondrop=e=>{const f=e.target.closest("[data-folder],[data-v=all]");if(!f||!e.dataTransfer.types.includes("text/ids"))return;
+ e.preventDefault();const ids=JSON.parse(e.dataTransfer.getData("text/ids"));moveTo(ids.map(byId).filter(Boolean),f.dataset.folder||null)};
+$("#content").ondragstart=e=>{const c=e.target.closest("[data-id]");if(!c)return;
+ const ids=S.sel.has(c.dataset.id)?[...S.sel]:[c.dataset.id];e.dataTransfer.setData("text/ids",JSON.stringify(ids))};
+$("#content").onclick=e=>{
+ const st=e.target.closest("[data-star]");if(st)return toggleFav(byId(st.dataset.star));
+ const a=e.target.closest("[data-a]");
+ if(a){const i=byId(a.dataset.id);return a.dataset.a==="run"?run(i):a.dataset.a==="ren"?renameItem(i):deleteItems([i])}
+ const c=e.target.closest("[data-id]");if(!c)return;const id=c.dataset.id;
+ if(e.ctrlKey||e.metaKey||e.target.dataset.chk){S.sel.has(id)?S.sel.delete(id):S.sel.add(id)}
+ else if(e.shiftKey&&S.active){const l=visible().map(i=>i.id),a1=l.indexOf(S.active),b1=l.indexOf(id);l.slice(Math.min(a1,b1),Math.max(a1,b1)+1).forEach(x=>S.sel.add(x))}
+ else{S.sel.clear()}
+ S.active=id;render()};
+$("#content").ondblclick=e=>{const c=e.target.closest("[data-id]");if(c&&!e.target.closest("button"))run(byId(c.dataset.id))};
+$("#bulk").onclick=async e=>{const b=e.target.closest("[data-b]")?.dataset.b;if(!b)return;const t=targets();
+ if(b==="all"){visible().forEach(i=>S.sel.add(i.id));return render()}
+ if(b==="none"){S.sel.clear();return render()}
+ if(b==="del")return deleteItems(t);if(b==="exp")return exportItems(t);if(b==="arc")return archive(t);
+ if(b==="move"){const d=await ask("Move "+t.length+" project(s)",`<select id="pv"><option value="">(root)</option>${S.folders.map(f=>`<option value="${f.id}">${esc(fPath(f.id))}</option>`).join("")}</select>`,"Move");if(d)moveTo(t,d.querySelector("#pv").value||null)}
+ if(b==="tag+"||b==="tag-"){const s=await prompt2("Tags (comma-separated)");if(s)(b==="tag+"?addTags:removeTags)(t,parseTags(s))}};
+$("#det").onclick=e=>{const i=byId(S.active);if(!i)return;
+ const rt=e.target.closest("[data-rt]");if(rt)return removeTags([i],[rt.dataset.rt]);
+ const a=e.target.closest("[data-a]");if(a)return a.dataset.a==="run"?run(i):toggleFav(i)};
+$("#det").onchange=async e=>{const i=byId(S.active);if(e.target.id==="dFolder"){await moveTo([i],e.target.value||null)}};
+$("#det").onkeydown=e=>{if(e.target.id==="dTag"&&e.key==="Enter"){const t=parseTags(e.target.value);if(t.length)addTags([byId(S.active)],t)}};
+$("#det").oninput=e=>{if(e.target.id==="dNotes"){const i=byId(S.active);i.notes=e.target.value;clearTimeout(i._t);i._t=setTimeout(()=>{const {_t,...c}=i;DB.put("meta",c)},400)}};
+let qt;$("#q").oninput=e=>{clearTimeout(qt);qt=setTimeout(()=>{S.q=e.target.value;S.limit=60;render()},80)};
+$("#sort").onchange=e=>{S.sort=e.target.value;render()};
+$("#bDirn").onclick=e=>{S.asc=!S.asc;e.target.textContent=S.asc?"↑":"↓";render()};
+$("#bView").onclick=e=>{S.mode=S.mode==="grid"?"list":"grid";e.target.textContent=S.mode==="grid"?"▦ Grid":"☰ List";S.limit=60;render()};
+$("#bNF").onclick=()=>newFolder(S.view.t==="folder"?S.view.id:null);
+$("#bImp").onclick=()=>$("#fIn").click();$("#bDir").onclick=()=>$("#dIn").click();
+$("#fIn").onchange=e=>{importFiles(e.target.files);e.target.value=""};
+$("#dIn").onchange=e=>{importFiles(e.target.files);e.target.value=""};
+$("#mIn").onchange=e=>{if(e.target.files[0])importMeta(e.target.files[0]);e.target.value=""};
+$("#bTheme").onclick=()=>{const r=document.documentElement,d=getComputedStyle(r).getPropertyValue("--bg").trim()==="#13161d";r.dataset.theme=d?"light":"dark"};
+$("#bMeta").onclick=async()=>{const d=await ask("Backup & restore",`<p>Metadata JSON stores folders, tags, notes and favorites (no files). Re-import your .sb3 files, then import the JSON to re-apply it.</p>
+ <select id="pv"><option value="e">Export metadata JSON</option><option value="i">Import metadata JSON</option><option value="b">Backup library (all .sb3 as .zip)</option><option value="x">Clear entire library</option></select>`,"Go");
+ if(!d)return;const v=d.querySelector("#pv").value;
+ if(v==="e")exportMeta();else if(v==="i")$("#mIn").click();
+ else if(v==="b"){const z=new JSZip();z.file("metadata.json",JSON.stringify({folders:S.folders,items:S.items.map(({thumb,...r})=>r)}));
+  for(const i of S.items)z.file(i.name+"-"+i.id.slice(-4)+".sb3",await DB.get("files",i.id));
+  download(await z.generateAsync({type:"blob",compression:"STORE"}),"sb3-library-backup.zip")}
+ else if(v==="x"&&await confirm2("Clear library","This deletes everything stored in this browser.")){await DB.clear();S.items=[];S.folders=[];S.sel.clear();S.active=null;render()}};
+// Global drag-and-drop import (files and folders)
+let dc=0;addEventListener("dragenter",e=>{if(e.dataTransfer.types.includes("Files")){dc++;$("#dz").style.display="flex"}});
+addEventListener("dragleave",()=>{if(--dc<=0){dc=0;$("#dz").style.display="none"}});
+addEventListener("dragover",e=>e.preventDefault());
+addEventListener("drop",async e=>{e.preventDefault();dc=0;$("#dz").style.display="none";
+ if(!e.dataTransfer.types.includes("Files"))return;
+ const out=[];const items=[...e.dataTransfer.items].map(i=>i.webkitGetAsEntry?.()).filter(Boolean);
+ if(items.length)for(const en of items)await walk(en,out);else out.push(...e.dataTransfer.files);
+ importFiles(out)});
+addEventListener("keydown",e=>{if(e.key==="Delete"&&!/INPUT|TEXTAREA|SELECT/.test(e.target.tagName)&&targets().length)deleteItems(targets())});
+
+/* ---------- Boot ---------- */
+(async()=>{await DB.open();[S.items,S.folders]=await Promise.all([DB.all("meta"),DB.all("folders")]);
+ if(!S.folders.length){for(const n of ["Games","Tutorials","Experiments"]){const f={id:uid(),name:n,parent:null};S.folders.push(f);await DB.put("folders",f)}}
+ render()})();
+</script></body></html>
